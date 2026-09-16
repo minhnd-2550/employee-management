@@ -1,4 +1,7 @@
-# Employee Management — Lab 1
+# Employee Management — Labs 1–2
+
+Hướng dẫn bên dưới dành cho Lab 1. Xem [Lab 2 — Bean, IoC và Dependency Injection](docs/lab-02-beans-and-ioc.md)
+để học phần mới và thử API <http://localhost:8080/employees/preview>.
 
 ## Mục tiêu
 
