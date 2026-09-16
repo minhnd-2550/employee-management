@@ -1,7 +1,10 @@
-# Employee Management — Labs 1–2
+# Employee Management — Labs 1–3
 
 Hướng dẫn bên dưới dành cho Lab 1. Xem [Lab 2 — Bean, IoC và Dependency Injection](docs/lab-02-beans-and-ioc.md)
 để học phần mới và thử API <http://localhost:8080/employees/preview>.
+
+Xem [Lab 3 — REST API cơ bản](docs/lab-03-rest-api.md) để thực hành lấy danh sách
+và thêm nhân viên bằng API lưu trong bộ nhớ.
 
 ## Mục tiêu
 
