@@ -2,15 +2,14 @@ package com.example.employeemanagement.service;
 
 import com.example.employeemanagement.dto.CreateEmployeeRequest;
 import com.example.employeemanagement.dto.UpdateEmployeeRequest;
+import com.example.employeemanagement.exception.ResourceNotFoundException;
 import com.example.employeemanagement.model.Department;
 import com.example.employeemanagement.model.Employee;
 import com.example.employeemanagement.repository.DepartmentRepository;
 import com.example.employeemanagement.repository.EmployeeRepository;
 import java.util.List;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @Transactional(readOnly = true)
@@ -74,12 +73,11 @@ public class EmployeeService {
 
     private Department findDepartment(Long id) {
         return departmentRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "Department not found: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Department not found: " + id));
     }
 
-    private ResponseStatusException employeeNotFound(Long id) {
-        return new ResponseStatusException(
-                HttpStatus.NOT_FOUND, "Employee not found: " + id);
+    private ResourceNotFoundException employeeNotFound(Long id) {
+        return new ResourceNotFoundException("Employee not found: " + id);
     }
 }

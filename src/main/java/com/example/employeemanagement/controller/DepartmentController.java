@@ -3,6 +3,7 @@ package com.example.employeemanagement.controller;
 import com.example.employeemanagement.dto.CreateDepartmentRequest;
 import com.example.employeemanagement.model.Department;
 import com.example.employeemanagement.service.DepartmentService;
+import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +29,8 @@ public class DepartmentController {
     }
 
     @PostMapping
-    public ResponseEntity<Department> create(@RequestBody CreateDepartmentRequest request) {
+    public ResponseEntity<Department> create(
+            @Valid @RequestBody CreateDepartmentRequest request) {
         Department department = departmentService.create(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(department);
     }

@@ -4,6 +4,7 @@ import com.example.employeemanagement.dto.CreateEmployeeRequest;
 import com.example.employeemanagement.dto.UpdateEmployeeRequest;
 import com.example.employeemanagement.model.Employee;
 import com.example.employeemanagement.service.EmployeeService;
+import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -45,7 +46,8 @@ public class EmployeeController {
     }
 
     @PostMapping
-    public ResponseEntity<Employee> create(@RequestBody CreateEmployeeRequest request) {
+    public ResponseEntity<Employee> create(
+            @Valid @RequestBody CreateEmployeeRequest request) {
         Employee employee = employeeService.create(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(employee);
     }
@@ -53,7 +55,7 @@ public class EmployeeController {
     @PutMapping("/{id}")
     public Employee update(
             @PathVariable Long id,
-            @RequestBody UpdateEmployeeRequest request) {
+            @Valid @RequestBody UpdateEmployeeRequest request) {
         return employeeService.update(id, request);
     }
 

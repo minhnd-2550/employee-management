@@ -1,4 +1,4 @@
-# Employee Management — Labs 1–4
+# Employee Management — Labs 1–5
 
 Hướng dẫn bên dưới dành cho Lab 1. Xem [Lab 2 — Bean, IoC và Dependency Injection](docs/lab-02-beans-and-ioc.md)
 để học phần mới và thử API <http://localhost:8080/employees/preview>.
@@ -8,6 +8,9 @@ và thêm nhân viên bằng API lưu trong bộ nhớ.
 
 Xem [Lab 4 — Spring Data JPA và MySQL](docs/lab-04-jpa-mysql.md) để lưu Employee,
 Department vào database, thực hiện CRUD và tìm kiếm.
+
+Xem [Lab 5 — Validation và Exception Handling](docs/lab-05-validation-errors.md)
+để kiểm tra request và trả lỗi API có cấu trúc.
 
 ## Mục tiêu
 
