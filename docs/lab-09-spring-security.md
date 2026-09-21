@@ -127,9 +127,10 @@ nếu tự gõ URL `/employees/add`.
 | --- | --- | --- | --- |
 | `POST /api/auth/register`, `POST /api/auth/login` | Cho phép | Cho phép | Cho phép |
 | `GET /api/employees/**`, `/api/departments/**`, `/api/reports/**` | 401 | Cho phép | Cho phép |
-| `GET /employees/list`, `/employees/search` | 401 | Cho phép | Cho phép |
+| `GET /employees/list`, `/employees/search`, `/employees/statistics` | 401 | Cho phép | Cho phép |
 | `POST /api/employees`, `PUT/DELETE /api/employees/**` | 401 | 403 | Cho phép |
 | `POST /api/departments`, `/employees/add` | 401 | 403 | Cho phép |
+| `/hello`, `/employees/preview` | Cho phép | Cho phép | Cho phép |
 | `/actuator/health` | Cho phép | Cho phép | Cho phép |
 | `/actuator/metrics/**` | 401 | 403 | Cho phép |
 

@@ -20,7 +20,7 @@ GET /api/reports/employees/count
   → EmployeeReportService.countEmployees()
   → cache employeeCount
        ├─ có dữ liệu: trả ngay
-       └─ chưa có: EmployeeRepository.count() → MySQL → lưu cache 60 giây
+       └─ chưa có: EmployeeRepository.countAllEmployees() → MySQL → lưu cache 60 giây
 ```
 
 `@Cacheable("employeeCount")` được đặt tại service. Spring tạo proxy bao quanh
@@ -81,10 +81,13 @@ bảo vệ bằng Spring Security hoặc chỉ mở trong mạng nội bộ.
 ./mvnw test
 ./mvnw spring-boot:run
 
-curl http://localhost:8080/api/reports/employees/count
+curl --user admin:admin12345 http://localhost:8080/api/reports/employees/count
 curl http://localhost:8080/actuator/health
-curl http://localhost:8080/actuator/metrics
+curl --user admin:admin12345 http://localhost:8080/actuator/metrics
 ```
+
+Sau khi hoàn thành Lab 9, API báo cáo yêu cầu `USER` hoặc `ADMIN`, còn Actuator
+metrics yêu cầu `ADMIN`. Endpoint health vẫn được mở để hệ thống giám sát gọi.
 
 Test báo cáo xác nhận lần gọi thứ hai lấy số lượng cũ từ cache; sau khi xóa cache,
 service đọc lại giá trị mới từ database. Test scheduler gọi method trực tiếp và

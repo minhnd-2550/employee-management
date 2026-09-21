@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -29,6 +30,18 @@ class SecurityAuthorizationTests {
 
     @Autowired
     private AppUserRepository userRepository;
+
+    @Test
+    void keepsLabOneAndTwoEndpointsPublic() throws Exception {
+        mockMvc.perform(get("/hello"))
+                .andExpect(status().isOk())
+                .andExpect(content().string("Hello, Employee Management!"));
+
+        mockMvc.perform(get("/employees/preview")
+                        .param("name", "  Nguyen   Duc Minh  "))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.formattedName").value("Nguyen Duc Minh"));
+    }
 
     @Test
     void registersUserHashesPasswordAndRejectsDuplicateUsername() throws Exception {

@@ -1,130 +1,142 @@
-# Employee Management — Labs 1–10
+# Employee Management — Spring Boot Labs 1–10
 
-Hướng dẫn bên dưới dành cho Lab 1. Xem [Lab 2 — Bean, IoC và Dependency Injection](docs/lab-02-beans-and-ioc.md)
-để học phần mới và thử API <http://localhost:8080/employees/preview>.
+Đây là trạng thái hoàn chỉnh sau 10 bài lab của Mini Project. Ứng dụng quản lý
+nhân viên bằng REST API và Thymeleaf, lưu dữ liệu bằng Spring Data JPA, phân quyền
+`USER`/`ADMIN`, cung cấp Actuator, cache, scheduled task và báo cáo thống kê.
 
-Xem [Lab 3 — REST API cơ bản](docs/lab-03-rest-api.md) để thực hành lấy danh sách
-và thêm nhân viên bằng API lưu trong bộ nhớ.
+## Chạy project hiện tại
 
-Xem [Lab 4 — Spring Data JPA và MySQL](docs/lab-04-jpa-mysql.md) để lưu Employee,
-Department vào database, thực hiện CRUD và tìm kiếm.
+Yêu cầu: Java 21 và MySQL đang chạy. Tạo database cho môi trường `dev`:
 
-Xem [Lab 5 — Validation và Exception Handling](docs/lab-05-validation-errors.md)
-để kiểm tra request và trả lỗi API có cấu trúc.
+```sql
+CREATE DATABASE employee_management
+    CHARACTER SET utf8mb4
+    COLLATE utf8mb4_unicode_ci;
+```
 
-Xem [Lab 6 — MVC và Thymeleaf](docs/lab-06-mvc-thymeleaf.md) để xem danh sách,
-thêm nhân viên và tìm kiếm bằng giao diện web.
-
-Xem [Lab 7 — Logging và Profiles](docs/lab-07-logging-profiles.md) để ghi log khi
-thay đổi nhân viên và tách cấu hình database cho môi trường dev/prod.
-
-Xem [Lab 8 — Actuator, Caching và Scheduling](docs/lab-08-actuator-caching-scheduling.md)
-để theo dõi ứng dụng, cache báo cáo tổng nhân viên và chạy tác vụ định kỳ.
-
-Xem [Lab 9 — Spring Security Basics](docs/lab-09-spring-security.md) để đăng ký,
-đăng nhập bằng Basic Auth hoặc JWT và phân quyền `USER`/`ADMIN`.
-
-Xem [Lab 10 — Reporting & Analytics](docs/lab-10-reporting-analytics.md) để viết
-truy vấn thống kê bằng `@Query`, cung cấp REST API và hiển thị báo cáo Thymeleaf.
-
-## Mục tiêu
-
-Khởi tạo một ứng dụng Spring Boot và gọi thành công API `GET /hello`.
-Lab này chưa cần database, service, đăng nhập hoặc giao diện.
-
-Project được tạo bằng Spring Initializr: Maven, Java 21, Spring Boot 4.1.1,
-dependency Spring Web. Maven Wrapper (`mvnw`, `mvnw.cmd`, `.mvn/`) cho phép chạy
-Maven mà không cần cài riêng. Lần đầu cần Internet để tải Maven và dependencies.
-
-## Chạy ứng dụng
-
-Mở terminal tại thư mục chứa file `pom.xml` rồi chạy:
+Mặc định project kết nối tới `jdbc:mysql://127.0.0.1:3306/employee_management`
+với username `root` và password rỗng. Có thể thay bằng biến môi trường:
 
 ```sh
+DB_URL='jdbc:mysql://127.0.0.1:3306/employee_management' \
+DB_USERNAME='root' \
+DB_PASSWORD='your-password' \
 ./mvnw spring-boot:run
 ```
 
-Mở <http://localhost:8080/hello> hoặc dùng terminal khác:
+Profile mặc định là `dev`. Khi khởi động lần đầu, ứng dụng tạo tài khoản quản trị
+dùng cho môi trường học tập:
 
-```sh
-curl -i http://localhost:8080/hello
+```text
+username: admin
+password: admin12345
 ```
 
-Kết quả mong đợi: HTTP `200` và nội dung:
+Không dùng các giá trị mặc định này khi triển khai thật. Profile `prod` bắt buộc
+cung cấp `DB_URL`, `DB_USERNAME`, `DB_PASSWORD`, `JWT_SECRET`, `ADMIN_USERNAME`
+và `ADMIN_PASSWORD`.
+
+## Các địa chỉ chính
+
+| Chức năng | Đường dẫn | Quyền |
+| --- | --- | --- |
+| Kiểm tra ứng dụng | `GET /hello` | Công khai |
+| Demo bean và DI | `GET /employees/preview` | Công khai |
+| Danh sách và tìm kiếm | `GET /employees/list` | `USER`, `ADMIN` |
+| Form thêm nhân viên | `GET/POST /employees/add` | `ADMIN` |
+| Trang thống kê | `GET /employees/statistics` | `USER`, `ADMIN` |
+| REST API nhân viên | `/api/employees/**` | `USER` đọc, `ADMIN` CRUD |
+| REST API phòng ban | `/api/departments/**` | `USER` đọc, `ADMIN` tạo |
+| REST API báo cáo | `/api/reports/**` | `USER`, `ADMIN` |
+| Đăng ký và đăng nhập | `/api/auth/register`, `/api/auth/login` | Công khai |
+| Actuator health | `GET /actuator/health` | Công khai |
+| Actuator metrics | `/actuator/metrics/**` | `ADMIN` |
+
+Trình duyệt sẽ hiện hộp thoại Basic Authentication khi mở các trang được bảo vệ.
+Đăng nhập bằng `admin` / `admin12345`, rồi mở
+<http://localhost:8080/employees/list>.
+
+Kiểm tra hai lab đầu mà không cần đăng nhập:
+
+```sh
+curl http://localhost:8080/hello
+curl -G http://localhost:8080/employees/preview \
+  --data-urlencode 'name=  Nguyen   Duc Minh  '
+```
+
+Ví dụ gọi API bằng tài khoản quản trị:
+
+```sh
+curl --user admin:admin12345 \
+  http://localhost:8080/api/employees
+
+curl --user admin:admin12345 \
+  http://localhost:8080/api/reports/employees/by-department
+```
+
+## Nội dung từng lab
+
+| Lab | Nội dung | Hướng dẫn |
+| --- | --- | --- |
+| 1 | Khởi tạo Spring Boot và `GET /hello` | Phần “Cơ chế Lab 1” bên dưới |
+| 2 | Bean, IoC và Dependency Injection | [Lab 2](docs/lab-02-beans-and-ioc.md) |
+| 3 | REST API in-memory | [Lab 3](docs/lab-03-rest-api.md) |
+| 4 | Spring Data JPA, MySQL, CRUD và tìm kiếm | [Lab 4](docs/lab-04-jpa-mysql.md) |
+| 5 | Validation và Global Exception Handling | [Lab 5](docs/lab-05-validation-errors.md) |
+| 6 | Spring MVC và Thymeleaf | [Lab 6](docs/lab-06-mvc-thymeleaf.md) |
+| 7 | Logging và Profiles | [Lab 7](docs/lab-07-logging-profiles.md) |
+| 8 | Actuator, Caching và Scheduling | [Lab 8](docs/lab-08-actuator-caching-scheduling.md) |
+| 9 | Basic Auth, JWT và phân quyền | [Lab 9](docs/lab-09-spring-security.md) |
+| 10 | REST API và Thymeleaf reporting | [Lab 10](docs/lab-10-reporting-analytics.md) |
+
+Các tài liệu Lab 2–8 giải thích trạng thái tại thời điểm hoàn thành lab đó. Sau
+Lab 9, các endpoint chứa dữ liệu nhân viên cần đăng nhập như bảng quyền phía trên.
+
+## Luồng chính của ứng dụng
+
+```text
+HTTP request
+  → Spring Security
+  → Controller hoặc MVC Controller
+  → Service
+  → Repository
+  → MySQL
+  → JSON hoặc Thymeleaf HTML
+```
+
+- Controller nhận request và chọn HTTP response hoặc view.
+- Service chứa nghiệp vụ, transaction, logging và cache invalidation.
+- Repository dùng Spring Data JPA để truy vấn database.
+- DTO nhận và validate dữ liệu từ client; entity biểu diễn dữ liệu được lưu.
+- Thymeleaf render HTML trên server, không cần JavaScript gọi lại REST API.
+
+## Cơ chế Lab 1
+
+1. JVM chạy `main()` trong `EmployeeManagementApplication`.
+2. `SpringApplication.run(...)` tạo ApplicationContext và web server nhúng.
+3. `@SpringBootApplication` bật auto-configuration và component scanning.
+4. Spring tìm thấy `HelloController` trong package con.
+5. `@GetMapping("/hello")` ánh xạ request tới method `hello()`.
+6. `@RestController` ghi chuỗi trả về trực tiếp vào HTTP response body.
+
+Kết quả mong đợi của `GET /hello`:
 
 ```text
 Hello, Employee Management!
 ```
 
-Dừng bằng `Ctrl+C` trong terminal chạy ứng dụng. Nếu cổng 8080 đang được dùng:
-
-```sh
-./mvnw spring-boot:run -Dspring-boot.run.arguments=--server.port=8081
-```
-
-Khi đó dùng <http://localhost:8081/hello>. Đường dẫn `/` chưa được khai báo nên
-trả 404 là bình thường; hãy truy cập đúng `/hello`.
-
-## Cấu trúc cần hiểu
-
-```text
-employee-management/
-├── pom.xml
-├── mvnw
-├── mvnw.cmd
-├── .mvn/wrapper/
-└── src/
-    ├── main/
-    │   ├── java/com/example/employeemanagement/
-    │   │   ├── EmployeeManagementApplication.java
-    │   │   └── controller/HelloController.java
-    │   └── resources/application.properties
-    └── test/java/com/example/employeemanagement/
-        └── EmployeeManagementApplicationTests.java
-```
-
-- `pom.xml`: phiên bản Java, Spring Boot, thư viện và cấu hình build.
-- `EmployeeManagementApplication`: điểm bắt đầu của chương trình.
-- `HelloController`: nhận request và trả response.
-- `application.properties`: cấu hình ứng dụng; hiện có tên ứng dụng.
-- Test được Initializr tạo sẵn kiểm tra Spring ApplicationContext khởi động được.
-
-## Cơ chế hoạt động
-
-1. JVM chạy `main()` trong `EmployeeManagementApplication`.
-2. `SpringApplication.run(...)` tạo Spring ApplicationContext và khởi động web server nhúng.
-3. `@SpringBootApplication` kết hợp cấu hình, auto-configuration và component scanning.
-   Spring tìm các component trong package của lớp này và các package con,
-   vì vậy đặt `controller` bên dưới `com.example.employeemanagement`.
-4. `@RestController` khiến Spring quản lý `HelloController` và ghi giá trị trả về
-   của method vào HTTP response body.
-5. `@GetMapping("/hello")` ánh xạ request `GET /hello` tới method `hello()`.
-6. Method trả chuỗi `Hello, Employee Management!`, trình duyệt hiển thị chuỗi đó.
-
-Không cần tự viết `new HelloController()`. Chuỗi trả về là văn bản, chưa phải JSON
-và cũng không phải tên một trang HTML.
-
-**Starter** gom các dependency phục vụ một chức năng. Trong project Boot 4 này,
-`spring-boot-starter-webmvc` cung cấp nền tảng Spring MVC và web server nhúng.
-**Auto-configuration** dựa vào dependency và cấu hình hiện có để thiết lập các
-thành phần phù hợp; nhờ đó chưa cần tự cấu hình web server cho Lab 1.
-
-## Tự thực hành
-
-1. Chạy project và gọi `/hello`.
-2. Đổi nội dung trả về thành lời chào của bạn, khởi động lại và kiểm tra.
-3. Thêm một method với `@GetMapping("/welcome")` rồi gọi endpoint mới.
-4. Giải thích tại sao `/hello` chạy được nhưng `/` trả 404.
-
-## Kiểm tra và đóng gói
+## Kiểm thử và đóng gói
 
 ```sh
 ./mvnw test
 ./mvnw package
-java -jar target/employee-management-0.0.1-SNAPSHOT.jar
 ```
 
-Chỉ chạy một phiên ứng dụng trên cùng cổng. Kiểm tra context không thay thế
-việc gọi `/hello`: cần xác nhận HTTP 200 và đúng nội dung bằng curl hoặc trình duyệt.
+Test dùng H2 ở chế độ tương thích MySQL nên không thay đổi dữ liệu trong MySQL
+cục bộ. Để chạy file JAR sau khi đóng gói:
+
+```sh
+java -jar target/employee-management-0.0.1-SNAPSHOT.jar
+```
 
 Nguồn đề bài: <https://sun-asterisk.wsm.vn/learn/vi/learning/3824/content/4395/attachment/9053/>

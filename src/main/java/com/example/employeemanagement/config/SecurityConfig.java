@@ -38,7 +38,13 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**"))
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/api/auth/register", "/api/auth/login", "/css/**", "/error")
+                        .requestMatchers(
+                                "/hello",
+                                "/employees/preview",
+                                "/api/auth/register",
+                                "/api/auth/login",
+                                "/css/**",
+                                "/error")
                         .permitAll()
                         .requestMatchers("/actuator/health").permitAll()
                         .requestMatchers("/actuator/metrics/**").hasRole("ADMIN")
