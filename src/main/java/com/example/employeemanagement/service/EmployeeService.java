@@ -8,12 +8,16 @@ import com.example.employeemanagement.model.Employee;
 import com.example.employeemanagement.repository.DepartmentRepository;
 import com.example.employeemanagement.repository.EmployeeRepository;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional(readOnly = true)
 public class EmployeeService {
+
+    private static final Logger log = LoggerFactory.getLogger(EmployeeService.class);
 
     private final EmployeeRepository employeeRepository;
     private final DepartmentRepository departmentRepository;
@@ -53,8 +57,11 @@ public class EmployeeService {
     @Transactional
     public Employee create(CreateEmployeeRequest request) {
         Department department = findDepartment(request.departmentId());
-        return employeeRepository.save(
+        Employee employee = employeeRepository.save(
                 new Employee(request.name(), request.email(), department));
+        log.info("Employee created: id={}, departmentId={}",
+                employee.getId(), department.getId());
+        return employee;
     }
 
     @Transactional
@@ -62,6 +69,7 @@ public class EmployeeService {
         Employee employee = findById(id);
         Department department = findDepartment(request.departmentId());
         employee.update(request.name(), request.email(), department);
+        log.info("Employee updated: id={}, departmentId={}", id, department.getId());
         return employee;
     }
 
@@ -69,6 +77,7 @@ public class EmployeeService {
     public void delete(Long id) {
         Employee employee = findById(id);
         employeeRepository.delete(employee);
+        log.info("Employee deleted: id={}", id);
     }
 
     private Department findDepartment(Long id) {

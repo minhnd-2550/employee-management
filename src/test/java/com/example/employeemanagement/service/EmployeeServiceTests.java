@@ -11,12 +11,16 @@ import com.example.employeemanagement.repository.DepartmentRepository;
 import com.example.employeemanagement.repository.EmployeeRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
 @Transactional
+@ExtendWith(OutputCaptureExtension.class)
 class EmployeeServiceTests {
 
     @Autowired
@@ -35,7 +39,7 @@ class EmployeeServiceTests {
     }
 
     @Test
-    void performsCrudAndSearchesByNameOrDepartment() {
+    void performsCrudAndSearchesByNameOrDepartment(CapturedOutput output) {
         Department engineering = departmentRepository.save(new Department("Engineering"));
         Department sales = departmentRepository.save(new Department("Sales"));
 
@@ -58,5 +62,9 @@ class EmployeeServiceTests {
 
         employeeService.delete(lan.getId());
         assertEquals(1, employeeService.findAll().size());
+
+        assertTrue(output.getAll().contains("Employee created: id=" + minh.getId()));
+        assertTrue(output.getAll().contains("Employee updated: id=" + minh.getId()));
+        assertTrue(output.getAll().contains("Employee deleted: id=" + lan.getId()));
     }
 }
