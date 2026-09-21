@@ -10,6 +10,7 @@ import com.example.employeemanagement.repository.EmployeeRepository;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -55,6 +56,7 @@ public class EmployeeService {
     }
 
     @Transactional
+    @CacheEvict(cacheNames = "employeeCount", allEntries = true)
     public Employee create(CreateEmployeeRequest request) {
         Department department = findDepartment(request.departmentId());
         Employee employee = employeeRepository.save(
@@ -74,6 +76,7 @@ public class EmployeeService {
     }
 
     @Transactional
+    @CacheEvict(cacheNames = "employeeCount", allEntries = true)
     public void delete(Long id) {
         Employee employee = findById(id);
         employeeRepository.delete(employee);

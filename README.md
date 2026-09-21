@@ -1,4 +1,4 @@
-# Employee Management — Labs 1–7
+# Employee Management — Labs 1–8
 
 Hướng dẫn bên dưới dành cho Lab 1. Xem [Lab 2 — Bean, IoC và Dependency Injection](docs/lab-02-beans-and-ioc.md)
 để học phần mới và thử API <http://localhost:8080/employees/preview>.
@@ -17,6 +17,9 @@ thêm nhân viên và tìm kiếm bằng giao diện web.
 
 Xem [Lab 7 — Logging và Profiles](docs/lab-07-logging-profiles.md) để ghi log khi
 thay đổi nhân viên và tách cấu hình database cho môi trường dev/prod.
+
+Xem [Lab 8 — Actuator, Caching và Scheduling](docs/lab-08-actuator-caching-scheduling.md)
+để theo dõi ứng dụng, cache báo cáo tổng nhân viên và chạy tác vụ định kỳ.
 
 ## Mục tiêu
 
