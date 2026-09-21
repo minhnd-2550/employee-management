@@ -1,6 +1,7 @@
 package com.example.employeemanagement.service;
 
 import com.example.employeemanagement.dto.DepartmentEmployeeCount;
+import com.example.employeemanagement.dto.MonthlyHireCount;
 import com.example.employeemanagement.repository.EmployeeRepository;
 import java.util.List;
 import org.slf4j.Logger;
@@ -29,5 +30,9 @@ public class EmployeeReportService {
 
     public List<DepartmentEmployeeCount> countEmployeesByDepartment() {
         return employeeRepository.countEmployeesByDepartment();
+    }
+
+    public List<MonthlyHireCount> countHiresByMonth() {
+        return employeeRepository.countHiresByMonth();
     }
 }

@@ -3,7 +3,10 @@ package com.example.employeemanagement.dto;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Size;
+import java.time.LocalDate;
+import org.springframework.format.annotation.DateTimeFormat;
 
 public class EmployeeForm {
 
@@ -17,6 +20,11 @@ public class EmployeeForm {
 
     @NotNull(message = "Department is required")
     private Long departmentId;
+
+    @NotNull(message = "Hire date is required")
+    @PastOrPresent(message = "Hire date must not be in the future")
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    private LocalDate hireDate;
 
     public String getName() {
         return name;
@@ -40,5 +48,13 @@ public class EmployeeForm {
 
     public void setDepartmentId(Long departmentId) {
         this.departmentId = departmentId;
+    }
+
+    public LocalDate getHireDate() {
+        return hireDate;
+    }
+
+    public void setHireDate(LocalDate hireDate) {
+        this.hireDate = hireDate;
     }
 }

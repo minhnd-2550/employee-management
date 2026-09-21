@@ -1,7 +1,7 @@
 package com.example.employeemanagement.controller;
 
 import com.example.employeemanagement.dto.CreateDepartmentRequest;
-import com.example.employeemanagement.model.Department;
+import com.example.employeemanagement.dto.DepartmentResponse;
 import com.example.employeemanagement.service.DepartmentService;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -24,14 +24,17 @@ public class DepartmentController {
     }
 
     @GetMapping
-    public List<Department> findAll() {
-        return departmentService.findAll();
+    public List<DepartmentResponse> findAll() {
+        return departmentService.findAll().stream()
+                .map(DepartmentResponse::from)
+                .toList();
     }
 
     @PostMapping
-    public ResponseEntity<Department> create(
+    public ResponseEntity<DepartmentResponse> create(
             @Valid @RequestBody CreateDepartmentRequest request) {
-        Department department = departmentService.create(request);
+        DepartmentResponse department =
+                DepartmentResponse.from(departmentService.create(request));
         return ResponseEntity.status(HttpStatus.CREATED).body(department);
     }
 }

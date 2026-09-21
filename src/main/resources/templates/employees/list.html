@@ -53,14 +53,34 @@
         <div class="table-wrap" th:unless="${#lists.isEmpty(employees)}">
             <table>
                 <thead>
-                <tr><th scope="col">ID</th><th scope="col">Họ tên</th><th scope="col">Email</th><th scope="col">Phòng ban</th></tr>
+                <tr>
+                    <th scope="col">Mã NV</th>
+                    <th scope="col">Họ tên</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Phòng ban</th>
+                    <th scope="col">Ngày vào làm</th>
+                    <th scope="col" th:if="${canManageEmployees}">Hành động</th>
+                </tr>
                 </thead>
                 <tbody>
                 <tr th:each="employee : ${employees}">
-                    <td th:text="${employee.id}">1</td>
+                    <td th:text="${employee.code} ?: '—'">NDM-0001</td>
                     <td th:text="${employee.name}">Nguyen Duc Minh</td>
                     <td th:text="${employee.email}">minh@example.com</td>
                     <td th:text="${employee.department.name}">Engineering</td>
+                    <td th:text="${employee.hireDate} ?: '—'">2024-01-15</td>
+                    <td th:if="${canManageEmployees}">
+                        <div class="row-actions">
+                            <a class="text-link"
+                               th:href="@{/employees/{id}/edit(id=${employee.id})}"
+                               href="/employees/1/edit">Sửa</a>
+                            <form th:action="@{/employees/{id}/delete(id=${employee.id})}"
+                                  action="/employees/1/delete" method="post"
+                                  onsubmit="return confirm('Xóa nhân viên này?')">
+                                <button class="link-button" type="submit">Xóa</button>
+                            </form>
+                        </div>
+                    </td>
                 </tr>
                 </tbody>
             </table>

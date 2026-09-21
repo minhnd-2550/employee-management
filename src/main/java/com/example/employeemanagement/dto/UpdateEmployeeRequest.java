@@ -3,7 +3,9 @@ package com.example.employeemanagement.dto;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Size;
+import java.time.LocalDate;
 
 public record UpdateEmployeeRequest(
         @NotBlank(message = "Name must not be blank")
@@ -15,5 +17,9 @@ public record UpdateEmployeeRequest(
         String email,
 
         @NotNull(message = "Department ID is required")
-        Long departmentId) {
+        Long departmentId,
+
+        @NotNull(message = "Hire date is required")
+        @PastOrPresent(message = "Hire date must not be in the future")
+        LocalDate hireDate) {
 }

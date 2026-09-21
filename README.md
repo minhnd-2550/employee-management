@@ -44,6 +44,8 @@ và `ADMIN_PASSWORD`.
 | Demo bean và DI | `GET /employees/preview` | Công khai |
 | Danh sách và tìm kiếm | `GET /employees/list` | `USER`, `ADMIN` |
 | Form thêm nhân viên | `GET/POST /employees/add` | `ADMIN` |
+| Form sửa nhân viên | `GET/POST /employees/{id}/edit` | `ADMIN` |
+| Xóa nhân viên | `POST /employees/{id}/delete` | `ADMIN` |
 | Trang thống kê | `GET /employees/statistics` | `USER`, `ADMIN` |
 | REST API nhân viên | `/api/employees/**` | `USER` đọc, `ADMIN` CRUD |
 | REST API phòng ban | `/api/departments/**` | `USER` đọc, `ADMIN` tạo |
@@ -51,6 +53,9 @@ và `ADMIN_PASSWORD`.
 | Đăng ký và đăng nhập | `/api/auth/register`, `/api/auth/login` | Công khai |
 | Actuator health | `GET /actuator/health` | Công khai |
 | Actuator metrics | `/actuator/metrics/**` | `ADMIN` |
+
+Mọi đường dẫn không nằm trong bảng trên đều bị chặn bằng `denyAll()`, nên một
+endpoint mới phải được khai báo trong `SecurityConfig` trước khi dùng được.
 
 Trình duyệt sẽ hiện hộp thoại Basic Authentication khi mở các trang được bảo vệ.
 Đăng nhập bằng `admin` / `admin12345`, rồi mở
@@ -72,6 +77,74 @@ curl --user admin:admin12345 \
 
 curl --user admin:admin12345 \
   http://localhost:8080/api/reports/employees/by-department
+
+curl --user admin:admin12345 \
+  http://localhost:8080/api/reports/employees/hiring-trend
+```
+
+## REST API nhân viên
+
+`GET /api/employees` và `GET /api/employees/search` trả về kết quả phân trang với
+`page`, `size` và `sort`. Mặc định 20 bản ghi mỗi trang, sắp xếp theo `name`, tối
+đa 100 bản ghi mỗi trang:
+
+```sh
+curl --user admin:admin12345 \
+  'http://localhost:8080/api/employees?page=0&size=2&sort=name,asc'
+```
+
+```json
+{
+  "content": [
+    {
+      "id": 1,
+      "code": "NDM-0001",
+      "name": "Nguyen Duc Minh",
+      "email": "minh@example.com",
+      "hireDate": "2024-03-15",
+      "department": { "id": 1, "name": "Engineering" }
+    }
+  ],
+  "page": { "size": 2, "number": 0, "totalElements": 3, "totalPages": 2 }
+}
+```
+
+API trả về `EmployeeResponse` và `DepartmentResponse` chứ không trả thẳng entity
+JPA, nên đổi tên cột trong database không làm vỡ hợp đồng API. Tầng Thymeleaf
+cũng nhận DTO, entity chỉ tồn tại trong service và repository.
+
+Các trang HTML vẫn hiển thị toàn bộ kết quả trong một trang; phân trang chỉ áp
+dụng cho REST API.
+
+## Báo cáo thống kê
+
+| Báo cáo | Endpoint | Ghi chú |
+| --- | --- | --- |
+| Tổng số nhân viên | `GET /api/reports/employees/count` | Cache 1 phút |
+| Số nhân viên theo phòng ban | `GET /api/reports/employees/by-department` | Gồm cả phòng ban trống |
+| Xu hướng tuyển dụng theo tháng | `GET /api/reports/employees/hiring-trend` | Nhóm theo `hire_date` |
+
+Cả ba báo cáo đều hiển thị trên `/employees/statistics`.
+
+## Mã nhân viên và ràng buộc dữ liệu
+
+`UtilityService.generateEmployeeCode` sinh mã từ chữ cái đầu của tên (đã bỏ dấu
+tiếng Việt) và id, ví dụ `Nguyễn Đức Minh` với id 1 thành `NDM-0001`. Mã được gán
+một lần khi tạo và không đổi khi sửa tên.
+
+Bảng `employee` yêu cầu `name` và `email` không null, `email` và `code` là duy
+nhất. Cột `hire_date` cho phép null ở database để dữ liệu cũ không bị vỡ, nhưng
+mọi request tạo hoặc sửa đều bắt buộc có ngày vào làm.
+
+Nếu database `dev` đã có sẵn dữ liệu từ các lab trước, `ddl-auto: update` sẽ
+không thêm được unique index cho `email` khi còn email trùng. Xóa bản ghi trùng
+hoặc tạo lại database trước khi chạy:
+
+```sql
+DROP DATABASE employee_management;
+CREATE DATABASE employee_management
+    CHARACTER SET utf8mb4
+    COLLATE utf8mb4_unicode_ci;
 ```
 
 ## Nội dung từng lab

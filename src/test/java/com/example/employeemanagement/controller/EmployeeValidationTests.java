@@ -33,7 +33,22 @@ class EmployeeValidationTests {
                 .andExpect(jsonPath("$.fieldErrors.name").value("Name must not be blank"))
                 .andExpect(jsonPath("$.fieldErrors.email").value("Email must be valid"))
                 .andExpect(jsonPath("$.fieldErrors.departmentId")
-                        .value("Department ID is required"));
+                        .value("Department ID is required"))
+                .andExpect(jsonPath("$.fieldErrors.hireDate")
+                        .value("Hire date is required"));
+    }
+
+    @Test
+    void rejectsHireDateInTheFuture() throws Exception {
+        mockMvc.perform(post("/api/employees")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"name":"Future Hire","email":"future@example.com",
+                                 "departmentId":1,"hireDate":"2999-01-01"}
+                                """))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.fieldErrors.hireDate")
+                        .value("Hire date must not be in the future"));
     }
 
     @Test

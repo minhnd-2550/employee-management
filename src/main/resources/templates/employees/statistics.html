@@ -63,6 +63,36 @@
             </table>
         </div>
     </section>
+
+    <section class="card" aria-labelledby="hiring-trend-heading">
+        <div class="results-heading">
+            <h2 id="hiring-trend-heading">Xu hướng tuyển dụng theo tháng</h2>
+            <span class="count" th:text="${#lists.size(hiringTrend)} + ' tháng'">0 tháng</span>
+        </div>
+
+        <p class="empty" th:if="${#lists.isEmpty(hiringTrend)}">
+            Chưa có nhân viên nào có ngày vào làm để thống kê xu hướng.
+        </p>
+
+        <div class="table-wrap" th:unless="${#lists.isEmpty(hiringTrend)}">
+            <table>
+                <thead>
+                <tr>
+                    <th scope="col">Tháng</th>
+                    <th scope="col">Số nhân viên vào làm</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="month : ${hiringTrend}">
+                    <td th:text="${month.monthLabel()}">01/2024</td>
+                    <td>
+                        <strong th:text="${month.hiredCount}">0</strong>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
 </main>
 </body>
 </html>

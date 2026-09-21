@@ -44,11 +44,16 @@ public class SecurityConfig {
                                 "/api/auth/register",
                                 "/api/auth/login",
                                 "/css/**",
+                                "/favicon.ico",
                                 "/error")
                         .permitAll()
                         .requestMatchers("/actuator/health").permitAll()
                         .requestMatchers("/actuator/metrics/**").hasRole("ADMIN")
-                        .requestMatchers("/employees/add").hasRole("ADMIN")
+                        .requestMatchers(
+                                "/employees/add",
+                                "/employees/*/edit",
+                                "/employees/*/delete")
+                        .hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/employees", "/api/departments")
                         .hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/employees/**").hasRole("ADMIN")
@@ -61,7 +66,9 @@ public class SecurityConfig {
                                 "/api/departments/**",
                                 "/api/reports/**")
                         .hasAnyRole("USER", "ADMIN")
-                        .anyRequest().authenticated())
+                        // Everything else is closed by default: a new endpoint has to be
+                        // listed above before any client can reach it.
+                        .anyRequest().denyAll())
                 .httpBasic(Customizer.withDefaults())
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(
                         jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())));

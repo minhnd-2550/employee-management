@@ -1,6 +1,7 @@
 package com.example.employeemanagement.controller;
 
 import com.example.employeemanagement.dto.DepartmentEmployeeCount;
+import com.example.employeemanagement.dto.MonthlyHireCount;
 import com.example.employeemanagement.service.EmployeeReportService;
 import java.util.List;
 import java.util.Map;
@@ -26,5 +27,10 @@ public class EmployeeReportController {
     @GetMapping("/employees/by-department")
     public List<DepartmentEmployeeCount> countEmployeesByDepartment() {
         return employeeReportService.countEmployeesByDepartment();
+    }
+
+    @GetMapping("/employees/hiring-trend")
+    public List<MonthlyHireCount> countHiresByMonth() {
+        return employeeReportService.countHiresByMonth();
     }
 }

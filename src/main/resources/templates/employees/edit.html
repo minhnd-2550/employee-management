@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Thêm nhân viên</title>
+    <title>Sửa nhân viên</title>
     <link rel="stylesheet" th:href="@{/css/employees.css}" href="/css/employees.css">
 </head>
 <body>
@@ -12,13 +12,17 @@
     <header class="page-header">
         <div>
             <p class="eyebrow">Employee Management</p>
-            <h1>Thêm nhân viên</h1>
-            <p class="muted">Điền thông tin để lưu nhân viên vào database.</p>
+            <h1>Sửa nhân viên</h1>
+            <p class="muted">
+                Mã nhân viên <strong th:text="${employee.code} ?: '—'">NDM-0001</strong>
+                không thay đổi khi cập nhật thông tin.
+            </p>
         </div>
     </header>
 
     <section class="card">
-        <form th:action="@{/employees/add}" th:object="${employeeForm}" action="/employees/add" method="post" novalidate>
+        <form th:action="@{/employees/{id}/edit(id=${employee.id})}" th:object="${employeeForm}"
+              action="/employees/1/edit" method="post" novalidate>
             <div class="field">
                 <label for="name">Họ tên</label>
                 <input id="name" type="text" th:field="*{name}" th:errorclass="invalid" maxlength="100" autocomplete="name">
@@ -37,7 +41,6 @@
                             th:value="${department.id}" th:text="${department.name}">Engineering</option>
                 </select>
                 <p class="field-error" th:if="${#fields.hasErrors('departmentId')}" th:errors="*{departmentId}">Chọn phòng ban</p>
-                <p class="muted" th:if="${#lists.isEmpty(departments)}">Chưa có phòng ban. Hãy tạo phòng ban qua API trước.</p>
             </div>
             <div class="field">
                 <label for="hireDate">Ngày vào làm</label>
@@ -45,7 +48,7 @@
                 <p class="field-error" th:if="${#fields.hasErrors('hireDate')}" th:errors="*{hireDate}">Ngày không hợp lệ</p>
             </div>
             <div class="actions">
-                <button class="button" type="submit" th:disabled="${#lists.isEmpty(departments)}">Lưu nhân viên</button>
+                <button class="button" type="submit">Lưu thay đổi</button>
                 <a class="text-link" th:href="@{/employees/list}" href="/employees/list">Hủy</a>
             </div>
         </form>

@@ -2,15 +2,17 @@ package com.example.employeemanagement.service;
 
 import com.example.employeemanagement.dto.CreateEmployeeRequest;
 import com.example.employeemanagement.dto.UpdateEmployeeRequest;
+import com.example.employeemanagement.exception.DuplicateResourceException;
 import com.example.employeemanagement.exception.ResourceNotFoundException;
 import com.example.employeemanagement.model.Department;
 import com.example.employeemanagement.model.Employee;
 import com.example.employeemanagement.repository.DepartmentRepository;
 import com.example.employeemanagement.repository.EmployeeRepository;
-import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,16 +24,19 @@ public class EmployeeService {
 
     private final EmployeeRepository employeeRepository;
     private final DepartmentRepository departmentRepository;
+    private final UtilityService utilityService;
 
     public EmployeeService(
             EmployeeRepository employeeRepository,
-            DepartmentRepository departmentRepository) {
+            DepartmentRepository departmentRepository,
+            UtilityService utilityService) {
         this.employeeRepository = employeeRepository;
         this.departmentRepository = departmentRepository;
+        this.utilityService = utilityService;
     }
 
-    public List<Employee> findAll() {
-        return employeeRepository.findAll();
+    public Page<Employee> findAll(Pageable pageable) {
+        return employeeRepository.findAll(pageable);
     }
 
     public Employee findById(Long id) {
@@ -39,30 +44,39 @@ public class EmployeeService {
                 .orElseThrow(() -> employeeNotFound(id));
     }
 
-    public List<Employee> search(String name, Long departmentId) {
+    public Page<Employee> search(String name, Long departmentId, Pageable pageable) {
         boolean hasName = name != null && !name.isBlank();
 
         if (hasName && departmentId != null) {
             return employeeRepository.findByNameContainingIgnoreCaseAndDepartment_Id(
-                    name, departmentId);
+                    name, departmentId, pageable);
         }
         if (hasName) {
-            return employeeRepository.findByNameContainingIgnoreCase(name);
+            return employeeRepository.findByNameContainingIgnoreCase(name, pageable);
         }
         if (departmentId != null) {
-            return employeeRepository.findByDepartment_Id(departmentId);
+            return employeeRepository.findByDepartment_Id(departmentId, pageable);
         }
-        return findAll();
+        return findAll(pageable);
     }
 
     @Transactional
     @CacheEvict(cacheNames = "employeeCount", allEntries = true)
     public Employee create(CreateEmployeeRequest request) {
         Department department = findDepartment(request.departmentId());
+        String name = utilityService.formatName(request.name());
+        String email = request.email().strip();
+        if (employeeRepository.existsByEmailIgnoreCase(email)) {
+            throw new DuplicateResourceException("Email already exists: " + email);
+        }
+
         Employee employee = employeeRepository.save(
-                new Employee(request.name(), request.email(), department));
-        log.info("Employee created: id={}, departmentId={}",
-                employee.getId(), department.getId());
+                new Employee(name, email, department, request.hireDate()));
+        // The sequence comes from the generated id, so the code is unique per employee.
+        employee.assignCode(utilityService.generateEmployeeCode(name, employee.getId()));
+
+        log.info("Employee created: id={}, code={}, departmentId={}",
+                employee.getId(), employee.getCode(), department.getId());
         return employee;
     }
 
@@ -70,7 +84,16 @@ public class EmployeeService {
     public Employee update(Long id, UpdateEmployeeRequest request) {
         Employee employee = findById(id);
         Department department = findDepartment(request.departmentId());
-        employee.update(request.name(), request.email(), department);
+        String email = request.email().strip();
+        if (employeeRepository.existsByEmailIgnoreCaseAndIdNot(email, id)) {
+            throw new DuplicateResourceException("Email already exists: " + email);
+        }
+
+        employee.update(
+                utilityService.formatName(request.name()),
+                email,
+                department,
+                request.hireDate());
         log.info("Employee updated: id={}, departmentId={}", id, department.getId());
         return employee;
     }
