@@ -2,6 +2,7 @@ package com.example.employeemanagement.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import com.example.employeemanagement.dto.DepartmentEmployeeCount;
 import com.example.employeemanagement.model.Department;
 import com.example.employeemanagement.model.Employee;
 import com.example.employeemanagement.repository.DepartmentRepository;
@@ -47,5 +48,24 @@ class EmployeeReportServiceTests {
 
         Objects.requireNonNull(cacheManager.getCache("employeeCount")).clear();
         assertEquals(2, employeeReportService.countEmployees());
+    }
+
+    @Test
+    void countsEmployeesForEveryDepartmentIncludingEmptyDepartments() {
+        Department engineering = departmentRepository.save(new Department("Engineering"));
+        Department operations = departmentRepository.save(new Department("Operations"));
+        Department sales = departmentRepository.save(new Department("Sales"));
+
+        employeeRepository.save(new Employee("Minh", "minh@example.com", engineering));
+        employeeRepository.save(new Employee("Lan", "lan@example.com", engineering));
+        employeeRepository.save(new Employee("An", "an@example.com", sales));
+
+        assertEquals(3, employeeReportService.countEmployees());
+        assertEquals(
+                java.util.List.of(
+                        new DepartmentEmployeeCount(engineering.getId(), "Engineering", 2L),
+                        new DepartmentEmployeeCount(operations.getId(), "Operations", 0L),
+                        new DepartmentEmployeeCount(sales.getId(), "Sales", 1L)),
+                employeeReportService.countEmployeesByDepartment());
     }
 }

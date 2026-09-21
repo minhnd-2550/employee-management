@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Thống kê nhân viên</title>
+    <link rel="stylesheet" th:href="@{/css/employees.css}" href="/css/employees.css">
+</head>
+<body>
+<main class="container">
+    <a class="text-link back-link" th:href="@{/employees/list}"
+       href="/employees/list">← Danh sách nhân viên</a>
+
+    <header class="page-header">
+        <div>
+            <p class="eyebrow">Employee Management</p>
+            <h1>Thống kê nhân viên</h1>
+            <p class="muted">Tổng quan số lượng nhân viên trong từng phòng ban.</p>
+        </div>
+    </header>
+
+    <section class="statistics-grid" aria-label="Thống kê tổng quan">
+        <article class="card metric-card">
+            <span class="metric-label">Tổng số nhân viên</span>
+            <strong class="metric-value" th:text="${totalEmployees}">0</strong>
+        </article>
+        <article class="card metric-card">
+            <span class="metric-label">Số phòng ban</span>
+            <strong class="metric-value" th:text="${#lists.size(departmentStatistics)}">0</strong>
+        </article>
+    </section>
+
+    <section class="card" aria-labelledby="department-statistics-heading">
+        <div class="results-heading">
+            <h2 id="department-statistics-heading">Nhân viên theo phòng ban</h2>
+            <span class="count" th:text="${#lists.size(departmentStatistics)} + ' phòng ban'">
+                0 phòng ban
+            </span>
+        </div>
+
+        <p class="empty" th:if="${#lists.isEmpty(departmentStatistics)}">
+            Chưa có phòng ban để thống kê.
+        </p>
+
+        <div class="table-wrap" th:unless="${#lists.isEmpty(departmentStatistics)}">
+            <table>
+                <thead>
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">Phòng ban</th>
+                    <th scope="col">Số nhân viên</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="statistic : ${departmentStatistics}">
+                    <td th:text="${statistic.departmentId}">1</td>
+                    <td th:text="${statistic.departmentName}">Engineering</td>
+                    <td>
+                        <strong th:text="${statistic.employeeCount}">0</strong>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
+</body>
+</html>

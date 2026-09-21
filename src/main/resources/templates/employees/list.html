@@ -14,8 +14,12 @@
             <h1>Danh sách nhân viên</h1>
             <p class="muted">Xem và tìm nhân viên theo tên hoặc phòng ban.</p>
         </div>
-        <a class="button" th:if="${canManageEmployees}"
-           th:href="@{/employees/add}" href="/employees/add">Thêm nhân viên</a>
+        <div class="header-actions">
+            <a class="text-link" th:href="@{/employees/statistics}"
+               href="/employees/statistics">Xem thống kê</a>
+            <a class="button" th:if="${canManageEmployees}"
+               th:href="@{/employees/add}" href="/employees/add">Thêm nhân viên</a>
+        </div>
     </header>
 
     <section class="card" aria-labelledby="search-heading">

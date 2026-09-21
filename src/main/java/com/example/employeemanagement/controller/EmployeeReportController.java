@@ -1,6 +1,8 @@
 package com.example.employeemanagement.controller;
 
+import com.example.employeemanagement.dto.DepartmentEmployeeCount;
 import com.example.employeemanagement.service.EmployeeReportService;
+import java.util.List;
 import java.util.Map;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,5 +21,10 @@ public class EmployeeReportController {
     @GetMapping("/employees/count")
     public Map<String, Long> countEmployees() {
         return Map.of("totalEmployees", employeeReportService.countEmployees());
+    }
+
+    @GetMapping("/employees/by-department")
+    public List<DepartmentEmployeeCount> countEmployeesByDepartment() {
+        return employeeReportService.countEmployeesByDepartment();
     }
 }

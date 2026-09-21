@@ -1,4 +1,4 @@
-# Employee Management — Labs 1–9
+# Employee Management — Labs 1–10
 
 Hướng dẫn bên dưới dành cho Lab 1. Xem [Lab 2 — Bean, IoC và Dependency Injection](docs/lab-02-beans-and-ioc.md)
 để học phần mới và thử API <http://localhost:8080/employees/preview>.
@@ -23,6 +23,9 @@ Xem [Lab 8 — Actuator, Caching và Scheduling](docs/lab-08-actuator-caching-sc
 
 Xem [Lab 9 — Spring Security Basics](docs/lab-09-spring-security.md) để đăng ký,
 đăng nhập bằng Basic Auth hoặc JWT và phân quyền `USER`/`ADMIN`.
+
+Xem [Lab 10 — Reporting & Analytics](docs/lab-10-reporting-analytics.md) để viết
+truy vấn thống kê bằng `@Query`, cung cấp REST API và hiển thị báo cáo Thymeleaf.
 
 ## Mục tiêu
 

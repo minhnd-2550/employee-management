@@ -4,9 +4,10 @@ import com.example.employeemanagement.dto.CreateEmployeeRequest;
 import com.example.employeemanagement.dto.EmployeeForm;
 import com.example.employeemanagement.exception.ResourceNotFoundException;
 import com.example.employeemanagement.service.DepartmentService;
+import com.example.employeemanagement.service.EmployeeReportService;
 import com.example.employeemanagement.service.EmployeeService;
-import jakarta.validation.Valid;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -22,12 +23,15 @@ public class EmployeeWebController {
 
     private final EmployeeService employeeService;
     private final DepartmentService departmentService;
+    private final EmployeeReportService employeeReportService;
 
     public EmployeeWebController(
             EmployeeService employeeService,
-            DepartmentService departmentService) {
+            DepartmentService departmentService,
+            EmployeeReportService employeeReportService) {
         this.employeeService = employeeService;
         this.departmentService = departmentService;
+        this.employeeReportService = employeeReportService;
     }
 
     @GetMapping("/list")
@@ -51,6 +55,15 @@ public class EmployeeWebController {
         model.addAttribute("searched", true);
         model.addAttribute("canManageEmployees", request.isUserInRole("ADMIN"));
         return "employees/list";
+    }
+
+    @GetMapping("/statistics")
+    public String statistics(Model model) {
+        model.addAttribute("totalEmployees", employeeReportService.countEmployees());
+        model.addAttribute(
+                "departmentStatistics",
+                employeeReportService.countEmployeesByDepartment());
+        return "employees/statistics";
     }
 
     @GetMapping("/add")

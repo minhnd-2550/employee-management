@@ -1,6 +1,8 @@
 package com.example.employeemanagement.service;
 
+import com.example.employeemanagement.dto.DepartmentEmployeeCount;
 import com.example.employeemanagement.repository.EmployeeRepository;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.Cacheable;
@@ -22,6 +24,10 @@ public class EmployeeReportService {
     @Cacheable("employeeCount")
     public long countEmployees() {
         log.debug("Counting employees in database");
-        return employeeRepository.count();
+        return employeeRepository.countAllEmployees();
+    }
+
+    public List<DepartmentEmployeeCount> countEmployeesByDepartment() {
+        return employeeRepository.countEmployeesByDepartment();
     }
 }

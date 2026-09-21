@@ -50,6 +50,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET,
                                 "/employees/list",
                                 "/employees/search",
+                                "/employees/statistics",
                                 "/api/employees/**",
                                 "/api/departments/**",
                                 "/api/reports/**")

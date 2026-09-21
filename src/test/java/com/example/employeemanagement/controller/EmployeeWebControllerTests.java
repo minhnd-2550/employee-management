@@ -69,5 +69,14 @@ class EmployeeWebControllerTests {
                 .andExpect(view().name("employees/list"))
                 .andExpect(content().string(org.hamcrest.Matchers.containsString(
                         "Lab Six Tester")));
+
+        mockMvc.perform(get("/employees/statistics"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("employees/statistics"))
+                .andExpect(model().attribute("totalEmployees", 1L))
+                .andExpect(content().string(org.hamcrest.Matchers.containsString(
+                        "Lab 6 Engineering")))
+                .andExpect(content().string(org.hamcrest.Matchers.containsString(
+                        "Tổng số nhân viên")));
     }
 }
