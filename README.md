@@ -1,4 +1,4 @@
-# Employee Management — Labs 1–5
+# Employee Management — Labs 1–6
 
 Hướng dẫn bên dưới dành cho Lab 1. Xem [Lab 2 — Bean, IoC và Dependency Injection](docs/lab-02-beans-and-ioc.md)
 để học phần mới và thử API <http://localhost:8080/employees/preview>.
@@ -11,6 +11,9 @@ Department vào database, thực hiện CRUD và tìm kiếm.
 
 Xem [Lab 5 — Validation và Exception Handling](docs/lab-05-validation-errors.md)
 để kiểm tra request và trả lỗi API có cấu trúc.
+
+Xem [Lab 6 — MVC và Thymeleaf](docs/lab-06-mvc-thymeleaf.md) để xem danh sách,
+thêm nhân viên và tìm kiếm bằng giao diện web.
 
 ## Mục tiêu
 

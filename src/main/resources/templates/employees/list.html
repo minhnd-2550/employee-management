@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Danh sách nhân viên</title>
+    <link rel="stylesheet" th:href="@{/css/employees.css}" href="/css/employees.css">
+</head>
+<body>
+<main class="container">
+    <header class="page-header">
+        <div>
+            <p class="eyebrow">Employee Management</p>
+            <h1>Danh sách nhân viên</h1>
+            <p class="muted">Xem và tìm nhân viên theo tên hoặc phòng ban.</p>
+        </div>
+        <a class="button" th:href="@{/employees/add}" href="/employees/add">Thêm nhân viên</a>
+    </header>
+
+    <section class="card" aria-labelledby="search-heading">
+        <h2 id="search-heading">Tìm kiếm</h2>
+        <form class="search-form" th:action="@{/employees/search}" action="/employees/search" method="get">
+            <div class="field">
+                <label for="name">Tên nhân viên</label>
+                <input id="name" name="name" type="search" placeholder="Ví dụ: Minh" th:value="${name}">
+            </div>
+            <div class="field">
+                <label for="departmentId">Phòng ban</label>
+                <select id="departmentId" name="departmentId">
+                    <option value="">Tất cả phòng ban</option>
+                    <option th:each="department : ${departments}"
+                            th:value="${department.id}"
+                            th:text="${department.name}"
+                            th:selected="${department.id == departmentId}">Engineering</option>
+                </select>
+            </div>
+            <button class="button" type="submit">Tìm kiếm</button>
+            <a class="text-link" th:href="@{/employees/list}" href="/employees/list">Xóa bộ lọc</a>
+        </form>
+    </section>
+
+    <section class="card" aria-labelledby="results-heading">
+        <div class="results-heading">
+            <h2 id="results-heading" th:text="${searched} ? 'Kết quả tìm kiếm' : 'Nhân viên'">Nhân viên</h2>
+            <span class="count" th:text="${#lists.size(employees)} + ' nhân viên'">0 nhân viên</span>
+        </div>
+        <p class="empty" th:if="${#lists.isEmpty(employees)}">Không tìm thấy nhân viên nào.</p>
+        <div class="table-wrap" th:unless="${#lists.isEmpty(employees)}">
+            <table>
+                <thead>
+                <tr><th scope="col">ID</th><th scope="col">Họ tên</th><th scope="col">Email</th><th scope="col">Phòng ban</th></tr>
+                </thead>
+                <tbody>
+                <tr th:each="employee : ${employees}">
+                    <td th:text="${employee.id}">1</td>
+                    <td th:text="${employee.name}">Nguyen Duc Minh</td>
+                    <td th:text="${employee.email}">minh@example.com</td>
+                    <td th:text="${employee.department.name}">Engineering</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
+</body>
+</html>
