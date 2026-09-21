@@ -1,4 +1,4 @@
-# Employee Management — Labs 1–8
+# Employee Management — Labs 1–9
 
 Hướng dẫn bên dưới dành cho Lab 1. Xem [Lab 2 — Bean, IoC và Dependency Injection](docs/lab-02-beans-and-ioc.md)
 để học phần mới và thử API <http://localhost:8080/employees/preview>.
@@ -20,6 +20,9 @@ thay đổi nhân viên và tách cấu hình database cho môi trường dev/pr
 
 Xem [Lab 8 — Actuator, Caching và Scheduling](docs/lab-08-actuator-caching-scheduling.md)
 để theo dõi ứng dụng, cache báo cáo tổng nhân viên và chạy tác vụ định kỳ.
+
+Xem [Lab 9 — Spring Security Basics](docs/lab-09-spring-security.md) để đăng ký,
+đăng nhập bằng Basic Auth hoặc JWT và phân quyền `USER`/`ADMIN`.
 
 ## Mục tiêu
 

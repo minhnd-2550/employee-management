@@ -10,3 +10,11 @@ spring:
 logging:
   level:
     com.example.employeemanagement: INFO
+
+app:
+  security:
+    jwt:
+      secret: ${JWT_SECRET}
+    admin:
+      username: ${ADMIN_USERNAME}
+      password: ${ADMIN_PASSWORD}

@@ -41,6 +41,28 @@ public class GlobalExceptionHandler {
                 Map.of());
     }
 
+    @ExceptionHandler(DuplicateResourceException.class)
+    public ResponseEntity<ApiError> handleDuplicate(
+            DuplicateResourceException exception,
+            HttpServletRequest request) {
+        return response(
+                HttpStatus.CONFLICT,
+                exception.getMessage(),
+                request.getRequestURI(),
+                Map.of());
+    }
+
+    @ExceptionHandler(InvalidCredentialsException.class)
+    public ResponseEntity<ApiError> handleInvalidCredentials(
+            InvalidCredentialsException exception,
+            HttpServletRequest request) {
+        return response(
+                HttpStatus.UNAUTHORIZED,
+                exception.getMessage(),
+                request.getRequestURI(),
+                Map.of());
+    }
+
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ApiError> handleUnreadableBody(
             HttpMessageNotReadableException exception,

@@ -6,6 +6,7 @@ import com.example.employeemanagement.exception.ResourceNotFoundException;
 import com.example.employeemanagement.service.DepartmentService;
 import com.example.employeemanagement.service.EmployeeService;
 import jakarta.validation.Valid;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -30,9 +31,10 @@ public class EmployeeWebController {
     }
 
     @GetMapping("/list")
-    public String list(Model model) {
+    public String list(Model model, HttpServletRequest request) {
         model.addAttribute("employees", employeeService.findAll());
         model.addAttribute("departments", departmentService.findAll());
+        model.addAttribute("canManageEmployees", request.isUserInRole("ADMIN"));
         return "employees/list";
     }
 
@@ -40,12 +42,14 @@ public class EmployeeWebController {
     public String search(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) Long departmentId,
-            Model model) {
+            Model model,
+            HttpServletRequest request) {
         model.addAttribute("employees", employeeService.search(name, departmentId));
         model.addAttribute("departments", departmentService.findAll());
         model.addAttribute("name", name);
         model.addAttribute("departmentId", departmentId);
         model.addAttribute("searched", true);
+        model.addAttribute("canManageEmployees", request.isUserInRole("ADMIN"));
         return "employees/list";
     }
 
